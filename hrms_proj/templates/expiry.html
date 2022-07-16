@@ -1,0 +1,213 @@
+
+
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}Expiry Details{% endblock  %}
+{% block content %}
+{% block employeeactive %}active{% endblock%}
+{% block expempactive %}active{% endblock%}
+
+  <div class="container-fluid  dashboard-content">
+    <!-- ============================================================== -->
+    <!-- pageheader -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="page-header">
+                <h2 class="pageheader-title">View expiry </h2>
+                <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit
+                    amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
+                <div class="page-breadcrumb">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">employee</a></li>
+                            <li class="breadcrumb-item active" aria-current="page"> expiry</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- end pageheader -->
+
+
+
+
+
+    <div class="row page-titles mx-0">
+        <div class="col-sm-6 p-md-0">
+            <div class="welcome-text">
+                <h4></h4>
+                <p class="mb-3"></p>
+            </div>
+        </div>
+        <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+            <ol class="breadcrumb">
+                <a href="add-employee.html">
+                    <button type="button" class="btn btn-primary">Add Employee</button></a>
+            </ol>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+
+
+
+    <div class="col-xxl">
+        <div class="card mb-1">
+       
+          <div class="card-body">
+         
+              <div class="form-row">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+              <select class="form-control" aria-label="Default select example">
+                  <option selected>select company</option>
+                  {% for i in company %}
+                  <option value="{{i.id}}">{{i.company}}</option>
+                  {% endfor %}
+
+                </select>
+               
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+           <select class="form-control" aria-label="Default select example">
+                  <option selected>select Branch</option>
+                  {% for i in branch %}
+                  <option value="{{i.id}}">{{i.branch}}</option>
+                  {% endfor %}
+                </select>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+            <select class="form-control" aria-label="Default select example">
+                   <option selected>select Category</option>
+                   {% for i in catogary %}
+                   <option value="{{i.id}}">{{i.category}}</option>
+                   {% endfor %}
+                 </select>
+           </div>
+          </div>
+        </div>
+    
+
+      </div>
+    </div>
+    
+
+
+    <div class="col-xxl">
+        <div class="card mb-3">
+       
+          <div class="card-body">
+         
+              <div class="form-row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+              <select class="form-control" aria-label="Default select example">
+                  <option selected>All<option>
+                  <option value="1">Passport</option>
+                  <option value="2">visa</option>
+                  <option value="3">insurance</option>
+                </select>
+               
+                </div>
+                
+        
+          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+            <select class="form-control" aria-label="Default select example">
+                   <option selected>select expiry date</option>
+                   <option value="1">next month</option>
+                   <option value="2">3month</option>
+                   <option value="3">4month</option>
+                 </select>
+           </div>
+          </div>
+        </div>
+    
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    
+    <div class="row">
+        <!-- ============================================================== -->
+        <!-- data table  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">List employee</h5>
+                    
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="example" class="table table-striped table-bordered second" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Employee Id</th>
+                                    <th>name</th>
+                                    <th>Email</th>
+                                    <th>Branch</th>
+                                    <th>visa expiry</th>
+                                    <th>passport expiry</th>
+                                    <th>emirates expiry</th>
+                                    <th>insurance expiry</th>
+                                    <th>Days to expiry</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in employee %}
+                                <tr>
+                                    <td>{{i.emp_id}}</td>
+                                    <td>{{i.fname}} {{i.lname}}</td>
+                                    <td>{{i.email}}</td>
+                                    <td>{{i.branch}}</td>
+                                    <td>{{i.visa_expiry}}</td>
+                                    <td>{{i.passport_expiry}}</td>
+                                    <td>{{i.emirates_expiry}}</td>
+                                    <td>{{i.insurence_expiry}}</td>
+                                    <td>10 days</td>
+                                    <td>  <span><a href="h" class="mr-4" data-toggle="tooltip"
+                                        data-placement="top" title="Edit"><i
+                                            class="fa fa-edit color-muted"></i> </a><a
+                                        href="javascript:void()" data-toggle="tooltip"
+                                        data-placement="top" title="Delete"><i
+                                            class="fa fa-trash color-danger"></i></a></span></td>
+                                </tr>
+                                {% endfor %}
+                               
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Employee Id</th>
+                                    <th>name</th>
+                                    <th>Email</th>
+                                    <th>Branch</th>
+                                    <th>visa expiry</th>
+                                    <th>passport expiry</th>
+                                    <th>emirates expiry</th>
+                                    <th>insurance expiry</th>
+                                    <th>Days to expiry</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end data table  -->
+        <!-- ============================================================== -->
+    </div>
+
+</div>
+{% endblock %}

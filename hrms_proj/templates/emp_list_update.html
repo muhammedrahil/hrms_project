@@ -1,0 +1,357 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}Edit employee{% endblock %}
+{% block content %}
+<div class="container-fluid  dashboard-content">
+    <!-- ============================================================== -->
+    <!-- pageheader -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="page-header">
+                <h2 class="pageheader-title">Edit employee </h2>
+                <p class="pageheader-text">Proin placerat ante duiullam scelerisque a velit ac porta, fusce sit
+                    amet vestibulum mi. Morbi lobortis pulvinar quam.</p>
+                <div class="page-breadcrumb">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">employee</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Add employee</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- end pageheader -->
+
+
+
+
+
+    <div class="row page-titles mx-0">
+        <div class="col-sm-6 p-md-0">
+            <div class="welcome-text">
+                <h4></h4>
+                <p class="mb-3"></p>
+            </div>
+        </div>
+        <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+            <ol class="breadcrumb">
+                <a href="{% url 'listemployee'%}">
+                    <button type="button" class="btn btn-primary">View Employee</button></a>
+            </ol>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+
+    <div class="row">
+        <!-- ============================================================== -->
+        <!-- validation form -->
+        <!-- ============================================================== -->
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"></div>
+                <h5 class="card-header">Edit Employee</h5>
+
+                <div class="card-body">
+                    <form class="needs-validation" novalidate action="{% url 'get_edit_employee' id=employee_intance.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <img src="{{employee_intance.upload_image.url}}" alt="" srcset="" class="photo" style="height: 150px;width: 150px;margin-left: 19px;background-size: 100% 100%; border-radius: 50%;">
+
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2 ">
+                                <label for="validationCustom01">upload Photo</label>
+                                <input type="file" name="image" value="{{employee_intance.upload_image.url}}"  class="form-control" id="validationCustom01" placeholder="upload Photo"
+                                    required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+
+                            <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 col-12 ">
+                                <label for="validationCustom01">name</label>
+                                <input type="text" name="fname" value="{{employee_intance.fname}}" class="form-control" id="validationCustom01" placeholder="name"
+                                    required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 ">
+                                <label for="validationCustom02">nick name</label>
+                                <input type="text" name="lname" value="{{employee_intance.lname}}" class="form-control" id="validationCustom02" placeholder="Last name"
+                                    value="" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mt-2">
+                                <label for="validationCustom02">date of birth</label>
+                                <input type="text" name="dob"  onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control" 
+                                id="validationCustom02" placeholder="{{employee_intance.dob}}"
+                                    value="" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 ">
+                                <label for="validationCustom02">Email</label>
+                                <input type="email" name="email" value="{{employee_intance.email}}" class="form-control" id="validationCustom02" placeholder="@mail.com"
+                                    value="" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom03">employee id</label>
+                                <input type="text" value="{{employee_intance.emp_id}}" name="emp_id" class="form-control" id="validationCustom03" placeholder="E-003"
+                                    required>
+                                <div class="invalid-feedback">
+                                    Please provide employee id
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom04">uid</label>
+                                <input type="text" value="{{employee_intance.uid}}" name="uid" class="form-control" id="validationCustom04" placeholder="uid"
+                                    required>
+                                <div class="invalid-feedback">
+                                    Please provide a uid.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">Gender</label>
+
+                                <select name="gender" class="form-control" id="input-select">
+                                    <option value="{{employee_intance.gender}}">{{employee_intance.gender}}</option>
+                                    <option value="male">male</option>
+                                    <option value="female">female</option>
+                                    <option value="Non-binary">Non-binary</option>
+                                </select>
+
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">Blood</label>
+
+                                <select name="blood" class="form-control" id="input-select">
+                                    <option value="{{employee_intance.blood}}">{{employee_intance.blood}}</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">mobile number</label>
+                                <input type="text" name="mobail_no" value="{{employee_intance.mobail_no}}" class="form-control" id="validationCustom02" placeholder="mobile"
+                                    value="" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">company</label>
+
+                                <select name="company" class="form-control" id="input-select">
+                                    <option value="{{employee_intance.company.id}}">{{employee_intance.company}}</option>
+                                    {% for i in company %}
+                                    <option value="{{i.id}}">{{i.company}}</option>
+                                    {% endfor %}
+                                    
+                                </select>
+
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">category</label>
+
+                                <select name="catogory" class="form-control" id="input-select">
+                                    <option value="{{employee_intance.catogory.id}}">{{employee_intance.catogory}}</option>
+                                    {% for i in catogory %}
+                                    <option value="{{i.id}}">{{i.category}}</option>
+                                    {% endfor %}
+
+                                </select>
+
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">branch</label>
+
+                                <select name="branch" class="form-control" id="input-select">
+                                    <option value="{{employee_intance.branch.id}}">{{employee_intance.branch}}</option>
+                                    {% for i in branch %}
+                                    <option value="{{i.id}}">{{i.branch}}</option>
+                                    {% endfor %}
+
+                                </select>
+
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-row">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">passport number</label>
+                                <input name="passport_number" type="text"  class="form-control" id="validationCustom02"
+                                    placeholder="passport number" value="{{employee_intance.passport_number}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">visa</label>
+                                <input name="visa" type="text" class="form-control" id="validationCustom02" placeholder="visa"
+                                value="{{employee_intance.visa}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">emirates</label>
+                                <input name="emirates" type="text" class="form-control" id="validationCustom02" placeholder="emirates"
+                                value="{{employee_intance.emirates}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">passport expiry</label>
+                                <input type="text" name="passport_expiry" class="form-control" id="validationCustom02"
+                                onfocus="(this.type='date')" onblur="(this.type='text')"  placeholder="{{employee_intance.passport_expiry}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">visa expiry</label>
+                                <input type="text" name="visa_expiry" class="form-control" id="validationCustom02" 
+                                 onfocus="(this.type='date')" onblur="(this.type='text')" placeholder="{{employee_intance.visa_expiry}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <label for="validationCustom02">emirates expiry</label>
+                                <input type="text" class="form-control" name="emirates_expiry" onfocus="(this.type='date')" onblur="(this.type='text')" id="validationCustom02" 
+                                 placeholder="{{employee_intance.emirates_expiry}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2 mt-4">
+                                <label for="validationCustom02">insurance </label>
+                                <input type="text" name="insurence" class="form-control" id="validationCustom02" placeholder="Insurance "
+                                value="{{employee_intance.insurence}}"  required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2 mt-3">
+                                <label for="validationCustom02">insurance expiry</label>
+                                <input type="text" name="insurence_expiry" class="form-control" onfocus="(this.type='date')" onblur="(this.type='text')" id="validationCustom02" 
+                                 placeholder="{{employee_intance.insurence_expiry}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <h5><a href="{{employee_intance.insurence_copy.url}}" target="_blank" >copy</a></h5>
+                                <label for="validationCustom02">insurance copy</label>
+                                <input type="file" name="insurence_copy" class="form-control" id="validationCustom02" placeholder="emirates"
+                                value="" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <h5><a href="{{employee_intance.passport_copy.url}}" target="_blank" >copy</a></h5>
+                                <label for="validationCustom02">passport copy</label>
+                                <input type="file" name="passport_copy" class="form-control" id="validationCustom02" placeholder="" value="{{employee_intance.passport_copy}}"
+                                    required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                <h5><a href="{{employee_intance.visa_copy.url}}" target="_blank" >copy</a></h5>
+                                <label for="validationCustom02">visa copy</label>
+                                <input type="file" name="visa_copy" class="form-control" id="validationCustom02" placeholder="visa"
+                                value="{{employee_intance.visa_copy}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-4">
+                                <h5><a href="{{employee_intance.emirates_copy.url}}" target="_blank" >copy</a></h5>
+                                <label for="validationCustom02">emirates copy</label>
+                                <input type="file" name="emirates_copy" class="form-control" id="validationCustom02" placeholder="emirates"
+                                value="{{employee_intance.emirates_copy}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-4">
+                                <h5><a href="{{employee_intance.other_document.url}}" target="_blank" >copy</a></h5>
+                                <label for="validationCustom02">other documents</label>
+                                <input type="file" name="other_document" class="form-control" id="validationCustom02"
+                                    placeholder="example@example.com" value="{{employee_intance.other_document}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-4">
+                                <label for="validationCustom02">notification mail</label>
+                                <input type="email" name="notification_email" class="form-control" id="validationCustom02"
+                                    placeholder="example@example.com" value="{{employee_intance.notification_email}}" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
+                                <button class="btn btn-primary" type="submit">Submit form</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end validation form -->
+        <!-- ============================================================== -->
+    </div>
+
+
+</div>
+{% endblock %}

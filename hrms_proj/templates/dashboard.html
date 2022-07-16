@@ -1,0 +1,197 @@
+{% extends 'home.html' %}
+{% load static %}
+{% block title %}dashboard{% endblock  %}
+{% block content %}
+{% block dashactive %}active{% endblock%}
+<div class="container-fluid dashboard-content ">
+    <!-- ============================================================== -->
+    <!-- pageheader  -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="page-header">
+                <h2 class="pageheader-title">Dashboard </h2>
+                <p class="pageheader-text">null</p>
+                <div class="page-breadcrumb">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#"
+                                    class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Admin</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- end pageheader  -->
+    <!-- ============================================================== -->
+    <div class="ecommerce-widget">
+
+        <div class="row">
+            <!-- ============================================================== -->
+            <!-- four widgets   -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- total employees   -->
+            <!-- ============================================================== -->
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">Employees</h5>
+                            <h2 class="mb-0"> {{no_employee}}</h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-info-light mt-1">
+                            <i class="fa fa-user fa-fw fa-sm text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- end total employees   -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- total company  -->
+            <!-- ============================================================== -->
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">Company</h5>
+                            <h2 class="mb-0"> {{no_company}}</h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-primary-light mt-1">
+                            <i class="fa fa-building fa-fw fa-sm text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- end total companys  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- branches   -->
+            <!-- ============================================================== -->
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">Branches</h5>
+                            <h2 class="mb-0">{{no_branch}}</h2>
+                        </div>
+                        <div
+                            class="float-right icon-circle-medium  icon-box-lg  bg-secondary-light mt-1">
+                            <i class="fa fa-code-branch fa-fw fa-sm text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ============================================================== -->
+            <!-- end branches   -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- total category   -->
+            <!-- ============================================================== -->
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-inline-block">
+                            <h5 class="text-muted">Category</h5>
+                            <h2 class="mb-0"> {{no_catogery}}</h2>
+                        </div>
+                        <div class="float-right icon-circle-medium  icon-box-lg  bg-brand-light mt-1">
+                            <i class="fa fa-table fa-fw fa-sm text-brand"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- end total category   -->
+            <!-- ============================================================== -->
+        </div>
+
+
+
+        <div class="row">
+            <!-- ============================================================== -->
+
+            <!-- ============================================================== -->
+
+            <!-- recent orders  -->
+            <!-- ============================================================== -->
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Expire due to </h5>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="bg-light">
+                                    <tr class="border-0">
+                                        <th class="border-0">#</th>
+                                        <th class="border-0">Empid</th>
+                                        <th class="border-0">Employee name</th>
+                                        <th class="border-0">Email</th>
+                                        <th class="border-0">Company</th>
+                                        <th class="border-0">Branch</th>
+                                        <th class="border-0">Type</th>
+                                        <th class="border-0">Expiry Date</th>
+                                        <th class="border-0">Days to Expiry</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="m-r-10"><img src="{% static '/images/product-pic.jpg'%}"
+                                                    alt="user" class="rounded" width="45"></div>
+                                        </td>
+                                        <td>employee name </td>
+                                        <td>abc@gmail.com </td>
+                                        <td>abc company</td>
+                                        <td>londan</td>
+                                        <td>passport expiry</td>
+                                        <td>july-08-2018</td>
+                                        <td>10 days</td>
+                                        <!-- <td><span class="badge-dot badge-brand mr-1"></span>InTransit
+                                        </td> -->
+                                    </tr>
+                                    <!-- <tr>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="m-r-10"><img
+                                                    src="assets/images/product-pic-2.jpg" alt="user"
+                                                    class="rounded" width="45"></div>
+                                        </td>
+                                        <td>Product #2 </td>
+                                        <td>id000002 </td>
+                                        <td>12</td>
+                                        <td>$180.00</td>
+                                        <td>25-08-2018 21:12:56</td>
+                                        <td>Rachel J. Wicker </td>
+                                        <td><span class="badge-dot badge-success mr-1"></span>Delivered
+                                        </td>
+                                    </tr> -->
+
+                                    <tr>
+                                        <td colspan="9"><a href="#"
+                                                class="btn btn-outline-light float-right">View
+                                                Details</a>
+                                            </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
