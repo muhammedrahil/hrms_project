@@ -1,9 +1,10 @@
 {% extends 'home.html' %}
 {% load static %}
 {% block title %}AddEmployee{% endblock %}
-{% block content %}
 {% block employeeactive %}active{% endblock %}
 {% block addempactive %}active{% endblock %}
+{% block content %}
+
 <div class="container-fluid  dashboard-content">
     <!-- ============================================================== -->
     <!-- pageheader -->
@@ -17,8 +18,8 @@
                 <div class="page-breadcrumb">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">employee</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}" class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link">employee</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Add employee</li>
                         </ol>
                     </nav>

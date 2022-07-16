@@ -1,8 +1,9 @@
 {% extends 'home.html' %}
 {% load static %}
 {% block title %}dashboard{% endblock  %}
-{% block content %}
 {% block dashactive %}active{% endblock%}
+{% block content %}
+
 <div class="container-fluid dashboard-content ">
     <!-- ============================================================== -->
     <!-- pageheader  -->
@@ -15,7 +16,7 @@
                 <div class="page-breadcrumb">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#"
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}"
                                     class="breadcrumb-link">Dashboard</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Admin</li>
                         </ol>
@@ -145,22 +146,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <!-- <tr>
                                         <td>1</td>
-                                        <td>
-                                            <div class="m-r-10"><img src="{% static '/images/product-pic.jpg'%}"
-                                                    alt="user" class="rounded" width="45"></div>
-                                        </td>
+
+                                        <td>12dff</td>
                                         <td>employee name </td>
                                         <td>abc@gmail.com </td>
                                         <td>abc company</td>
                                         <td>londan</td>
                                         <td>passport expiry</td>
                                         <td>july-08-2018</td>
-                                        <td>10 days</td>
+                                        <td>10 days</td> -->
                                         <!-- <td><span class="badge-dot badge-brand mr-1"></span>InTransit
                                         </td> -->
-                                    </tr>
+                                    <!-- </tr> -->
                                     <!-- <tr>
                                         <td>2</td>
                                         <td>

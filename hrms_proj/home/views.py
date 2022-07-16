@@ -149,59 +149,59 @@ def get_edit_employee(request,id):
 
             user_id = request.user.id
 
-            if len(request.FILES)!=0:
+        if len(request.FILES)!=0:
 
-                if len(request.FILES['image'])!= 0:
-                    image_path=emp.upload_image.path
-                    print(image_path)
-                    upload_image=request.FILES['image']
-                    print(upload_image)
-                    emp.upload_image=upload_image
-                    os.remove(image_path)
+            try:
+                upload_image=request.FILES['image']
+                image_path=emp.upload_image.path
+                emp.upload_image=upload_image
+                os.remove(image_path)
+            except:
+                pass
 
+            try:
+                insurance_copy=request.FILES['insurence_copy']             
+                insurence_path=emp.insurance_copy.path
+                emp.insurance_copy=insurance_copy
+                os.remove(insurence_path)
+            except:
+                pass
+        
 
-                if len(request.FILES['insurence_copy'])!= 0:
-                    insurence_path=emp.insurence_copy.path
-                    print(insurence_path)
-                    insurence_copy=request.FILES['insurence_copy'] 
-                    print(insurence_copy)            
-                    emp.insurance_copy=insurence_copy
-                    os.remove(insurence_path)
-            
-
-                if len(request.FILES['passport_copy'])!=0:
-                    passport_path=emp.passport_copy.path
-                    print(insurence_path)
-                    passport_copy=request.FILES['passport_copy']
-                    print(passport_copy)
-                    emp.passport_copy=passport_copy
-                    os.remove(passport_path)
-
-
-                if len(request.FILES['visa_copy'])!=0:
-                    visa_path=emp.visa_copy.path
-                    print(insurence_path)
-                    visa_copy=request.FILES['visa_copy']
-                    print(visa_copy)
-                    emp.visa_copy=visa_copy
-                    os.remove(visa_path)
+            try:
+                passport_copy=request.FILES['passport_copy']
+                passport_path=emp.passport_copy.path
+                emp.passport_copy=passport_copy
+                os.remove(passport_path)
+            except:
+                pass
 
 
-                if len(request.FILES['emirates_copy'])!=0:
-                    emirates_path=emp.emirates_copy.path
-                    emirates_copy=request.FILES['emirates_copy']
-                    emp.emirates_copy=emirates_copy    
-                    os.remove(emirates_path)
-   
+            try:
+                visa_copy=request.FILES['visa_copy']
+                visa_path=emp.visa_copy.path
+                emp.visa_copy=visa_copy
+                os.remove(visa_path)
+            except:
+                pass
 
-                if len(request.FILES['other_document'])!=0:
-                    other_document_path=emp.other_document.path
-                    other_document=request.FILES['other_document']
-                    emp.other_document=other_document                    
-                    os.remove(other_document_path)
-  
-            
+            try:
+                emirates_copy=request.FILES['emirates_copy']
+                emirates_path=emp.emirates_copy.path
+                emp.emirates_copy=emirates_copy    
+                os.remove(emirates_path)
+            except:
+                pass
 
+
+            try:
+                other_document=request.FILES['other_document']
+                other_document_path=emp.other_document.path
+                emp.other_document=other_document                    
+                os.remove(other_document_path)
+            except:
+                pass
+ 
             try:
             
                 if len(request.POST['dob']) !=0:
@@ -272,7 +272,7 @@ def get_edit_employee(request,id):
             emp.save()
             return redirect(listemployee)
     except:
-        return HttpResponse("<script>alert(' failed');window.history.back()</script>")
+        return HttpResponse("<script>alert('failed');window.history.back()</script>")
 
     
 
@@ -331,6 +331,27 @@ def delete_category(request,id):
     category_instance.delete()
     return redirect(catogory)
 
+
+def update_category(request,id):
+    request.session['update_category_id']=id
+    print(request.session['update_category_id'])
+    return redirect(catogory)
+
+def get_update_category(request):
+    
+    if request.method == 'POST':
+        try:
+            new_catogory=request.POST['catogary']
+            print(new_catogory)
+            update_category_id=request.session['update_category_id']
+            print(update_category_id)
+            catogory_instance=Category.objects.get(id=update_category_id)
+            catogory_instance.category=new_catogory
+            catogory_instance.save()          
+            return redirect(catogory)
+
+        except:
+            return HttpResponse("<script>alert('Catogary Not Found');window.history.back()</script>")
 # end catogory****************************************************************
 
 

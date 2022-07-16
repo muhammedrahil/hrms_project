@@ -1,8 +1,9 @@
 {% extends 'home.html' %}
 {% load static %}
 {% block title %}Catogory{% endblock %}
-{% block content %}
 {% block catactive %}active{% endblock%}
+{% block content %}
+
 <div class="container-fluid  dashboard-content">
     <!-- ============================================================== -->
     <!-- pageheader -->
@@ -16,8 +17,8 @@
                 <div class="page-breadcrumb">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Category</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}" class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link">Category</a></li>
                             <li class="breadcrumb-item active" aria-current="page">company list</li>
                         </ol>
                     </nav>
@@ -60,7 +61,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-
                     <!-- catogary form  -->
                     <form action="{% url 'get_catogory'%}" method="post">
                         {% csrf_token %}
@@ -75,16 +75,43 @@
                         </div>
                     </form>
                     <!-- catogary form  -->
-
                 </div>
-
             </div>
         </div>
     </div>
 
 
     <!-- momant end -->
-
+    <!-- momant -->
+    <div class="modal fade" id="exampleModa2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- catogary form  -->
+                    <form action="{% url 'get_update_category' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Category name</label>
+                            <input type="text" class="form-control" name="catogary" placeholder="Category name"
+                                id="recipient-name">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                    <!-- catogary form  -->
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -116,7 +143,8 @@
                                     <td>{{forloop.counter}}</td>
                                     <td>{{i.category}}</td>
 
-                                    <td> <span><a href="h" class="mr-4" data-toggle="tooltip" data-placement="top"
+                                    <td> <span><a href="{% url 'update_category' id=i.id %}"  class="mr-4" id="id"   data-placement="top" data-toggle="modal" data-target="#exampleModa2"
+                                        data-whatever="@mdo"
                                                 title="Edit"><i class="fa fa-edit color-muted"></i> </a>
 
 

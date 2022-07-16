@@ -2,8 +2,8 @@
 {% extends 'home.html' %}
 {% load static %}
 {% block title %}Branches{% endblock  %}
-{% block content %}
 {% block braactive %}active{% endblock%}
+{% block content %}
 <div class="container-fluid  dashboard-content">
     <!-- ============================================================== -->
     <!-- pageheader -->
@@ -17,8 +17,8 @@
                 <div class="page-breadcrumb">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">branches</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}" class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link">branches</a></li>
                             <li class="breadcrumb-item active" aria-current="page">branch list</li>
                         </ol>
                     </nav>

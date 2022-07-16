@@ -3,9 +3,10 @@
 {% extends 'home.html' %}
 {% load static %}
 {% block title %}Expiry Details{% endblock  %}
-{% block content %}
 {% block employeeactive %}active{% endblock%}
 {% block expempactive %}active{% endblock%}
+{% block content %}
+
 
   <div class="container-fluid  dashboard-content">
     <!-- ============================================================== -->
@@ -20,8 +21,8 @@
                 <div class="page-breadcrumb">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">employee</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}" class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link">employee</a></li>
                             <li class="breadcrumb-item active" aria-current="page"> expiry</li>
                         </ol>
                     </nav>
@@ -45,7 +46,7 @@
         </div>
         <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
             <ol class="breadcrumb">
-                <a href="add-employee.html">
+                <a href="{% url 'addemployee'%}">
                     <button type="button" class="btn btn-primary">Add Employee</button></a>
             </ol>
         </div>
