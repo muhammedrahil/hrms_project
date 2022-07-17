@@ -9,10 +9,13 @@ urlpatterns =[
 
     path('addemployee',views.addemployee,name="addemployee"),
     path('get_addemployee',views.get_addemployee,name="get_addemployee"),
+
     path('listemployee',views.listemployee,name="listemployee"),
     path('edit_employee/<int:id>',views.edit_employee,name="edit_employee"),
     path('get_edit_employee/<int:id>',views.get_edit_employee,name="get_edit_employee"),
     path('delete_employee/<int:id>',views.delete_employee,name="delete_employee"),
+    path('company_employee',views.company_employee,name="company_employee"),
+
 
     path('expairydetails',views.expairydetails,name="expairydetails"),
 

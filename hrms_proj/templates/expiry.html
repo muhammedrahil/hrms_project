@@ -104,10 +104,11 @@
               <div class="form-row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
               <select class="form-control" aria-label="Default select example">
-                  <option selected>All<option>
+                <option value="">All</option>
                   <option value="1">Passport</option>
-                  <option value="2">visa</option>
-                  <option value="3">insurance</option>
+                  <option value="">Emirates</option>
+                  <option value="2">Visa</option>
+                  <option value="3">Insurance</option>
                 </select>
                
                 </div>
@@ -153,15 +154,15 @@
                             <thead>
                                 <tr>
                                     <th>Employee Id</th>
-                                    <th>name</th>
+                                    <th>Name</th>
                                     <th>Email</th>
                                     <th>Branch</th>
-                                    <th>visa expiry</th>
-                                    <th>passport expiry</th>
-                                    <th>emirates expiry</th>
-                                    <th>insurance expiry</th>
-                                    <th>Days to expiry</th>
-                                    <th>Action</th>
+                                    <th>Visa Expiry</th>
+                                    <th>Passport Expiry</th>
+                                    <th>Emirates Expiry</th>
+                                    <th>Insurance Expiry</th>
+                                    <th>Days to Expiry</th>
+                                    <!-- <th>Action</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -176,28 +177,28 @@
                                     <td>{{i.emirates_expiry}}</td>
                                     <td>{{i.insurence_expiry}}</td>
                                     <td>10 days</td>
-                                    <td>  <span><a href="h" class="mr-4" data-toggle="tooltip"
+                                    <!-- <td>  <span><a href="h" class="mr-4" data-toggle="tooltip"
                                         data-placement="top" title="Edit"><i
                                             class="fa fa-edit color-muted"></i> </a><a
                                         href="javascript:void()" data-toggle="tooltip"
                                         data-placement="top" title="Delete"><i
                                             class="fa fa-trash color-danger"></i></a></span></td>
-                                </tr>
+                                </tr> -->
                                 {% endfor %}
                                
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th>Employee Id</th>
-                                    <th>name</th>
+                                    <th>Name</th>
                                     <th>Email</th>
                                     <th>Branch</th>
-                                    <th>visa expiry</th>
-                                    <th>passport expiry</th>
-                                    <th>emirates expiry</th>
-                                    <th>insurance expiry</th>
-                                    <th>Days to expiry</th>
-                                    <th>Action</th>
+                                    <th>Visa Expiry</th>
+                                    <th>Passport Expiry</th>
+                                    <th>Emirates Expiry</th>
+                                    <th>Insurance Expiry</th>
+                                    <th>Days to Expiry</th>
+                                    <!-- <th>Action</th> -->
                                 </tr>
                             </tfoot>
                         </table>

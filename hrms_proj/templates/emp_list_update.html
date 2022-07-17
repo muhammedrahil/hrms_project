@@ -26,11 +26,6 @@
     </div>
     <!-- ============================================================== -->
     <!-- end pageheader -->
-
-
-
-
-
     <div class="row page-titles mx-0">
         <div class="col-sm-6 p-md-0">
             <div class="welcome-text">
@@ -60,11 +55,16 @@
                     <form class="needs-validation" novalidate action="{% url 'get_edit_employee' id=employee_intance.id %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
+
+                            {% if employee_intance.upload_image %}
                             <img src="{{employee_intance.upload_image.url}}" alt="" srcset="" class="photo" style="height: 150px;width: 150px;margin-left: 19px;background-size: 100% 100%; border-radius: 50%;">
+                            {% else %}
+                            <img src="{% static '/images/dribbble.png  '%}" alt="" srcset="" class="photo" style="height: 150px;width: 150px;margin-left: 19px;background-size: 100% 100%; border-radius: 50%;">
+                            {% endif %}
 
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2 ">
-                                <label for="validationCustom01">upload Photo</label>
-                                <input type="file" name="image" value="{{employee_intance.upload_image.url}}"  class="form-control" id="validationCustom01" placeholder="upload Photo"
+                                <label for="validationCustom01">Upload Photo</label>
+                                <input type="file" name="image" value=""  class="form-control" id="validationCustom01" placeholder="upload Photo"
                                     required>
                                 <div class="valid-feedback">
                                     Looks good!
@@ -72,7 +72,7 @@
                             </div>
 
                             <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 col-12 ">
-                                <label for="validationCustom01">name</label>
+                                <label for="validationCustom01">First Name</label>
                                 <input type="text" name="fname" value="{{employee_intance.fname}}" class="form-control" id="validationCustom01" placeholder="name"
                                     required>
                                 <div class="valid-feedback">
@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 ">
-                                <label for="validationCustom02">nick name</label>
+                                <label for="validationCustom02">Last Name</label>
                                 <input type="text" name="lname" value="{{employee_intance.lname}}" class="form-control" id="validationCustom02" placeholder="Last name"
                                     value="" required>
                                 <div class="valid-feedback">
@@ -88,7 +88,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mt-2">
-                                <label for="validationCustom02">date of birth</label>
+                                <label for="validationCustom02">Date Of Birth</label>
                                 <input type="text" name="dob"  onfocus="(this.type='date')" onblur="(this.type='text')" class="form-control" 
                                 id="validationCustom02" placeholder="{{employee_intance.dob}}"
                                     value="" required>
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom03">employee id</label>
+                                <label for="validationCustom03">Employee Id</label>
                                 <input type="text" value="{{employee_intance.emp_id}}" name="emp_id" class="form-control" id="validationCustom03" placeholder="E-003"
                                     required>
                                 <div class="invalid-feedback">
@@ -113,7 +113,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom04">uid</label>
+                                <label for="validationCustom04">Uid</label>
                                 <input type="text" value="{{employee_intance.uid}}" name="uid" class="form-control" id="validationCustom04" placeholder="uid"
                                     required>
                                 <div class="invalid-feedback">
@@ -156,7 +156,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">mobile number</label>
+                                <label for="validationCustom02">Mobile Number</label>
                                 <input type="text" name="mobail_no" value="{{employee_intance.mobail_no}}" class="form-control" id="validationCustom02" placeholder="mobile"
                                     value="" required>
                                 <div class="valid-feedback">
@@ -166,7 +166,7 @@
                         </div>
                         <div class="form-row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">company</label>
+                                <label for="validationCustom02">Company</label>
 
                                 <select name="company" class="form-control" id="input-select">
                                     <option value="{{employee_intance.company.id}}">{{employee_intance.company}}</option>
@@ -181,11 +181,11 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">category</label>
+                                <label for="validationCustom02">Category</label>
 
                                 <select name="catogory" class="form-control" id="input-select">
                                     <option value="{{employee_intance.catogory.id}}">{{employee_intance.catogory}}</option>
-                                    {% for i in catogory %}
+                                    {% for i in catogary %}
                                     <option value="{{i.id}}">{{i.category}}</option>
                                     {% endfor %}
 
@@ -196,7 +196,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">branch</label>
+                                <label for="validationCustom02">Branch</label>
 
                                 <select name="branch" class="form-control" id="input-select">
                                     <option value="{{employee_intance.branch.id}}">{{employee_intance.branch}}</option>
@@ -215,7 +215,7 @@
 
                         <div class="form-row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">passport number</label>
+                                <label for="validationCustom02">Passport Number</label>
                                 <input name="passport_number" type="text"  class="form-control" id="validationCustom02"
                                     placeholder="passport number" value="{{employee_intance.passport_number}}" required>
                                 <div class="valid-feedback">
@@ -223,7 +223,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">visa</label>
+                                <label for="validationCustom02">Visa</label>
                                 <input name="visa" type="text" class="form-control" id="validationCustom02" placeholder="visa"
                                 value="{{employee_intance.visa}}" required>
                                 <div class="valid-feedback">
@@ -231,7 +231,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">emirates</label>
+                                <label for="validationCustom02">Emirates</label>
                                 <input name="emirates" type="text" class="form-control" id="validationCustom02" placeholder="emirates"
                                 value="{{employee_intance.emirates}}" required>
                                 <div class="valid-feedback">
@@ -241,7 +241,7 @@
                         </div>
                         <div class="form-row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">passport expiry</label>
+                                <label for="validationCustom02">Passport Expiry</label>
                                 <input type="text" name="passport_expiry" class="form-control" id="validationCustom02"
                                 onfocus="(this.type='date')" onblur="(this.type='text')"  placeholder="{{employee_intance.passport_expiry}}" required>
                                 <div class="valid-feedback">
@@ -249,7 +249,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">visa expiry</label>
+                                <label for="validationCustom02">Visa Expiry</label>
                                 <input type="text" name="visa_expiry" class="form-control" id="validationCustom02" 
                                  onfocus="(this.type='date')" onblur="(this.type='text')" placeholder="{{employee_intance.visa_expiry}}" required>
                                 <div class="valid-feedback">
@@ -257,7 +257,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <label for="validationCustom02">emirates expiry</label>
+                                <label for="validationCustom02">Emirates Expiry</label>
                                 <input type="text" class="form-control" name="emirates_expiry" onfocus="(this.type='date')" onblur="(this.type='text')" id="validationCustom02" 
                                  placeholder="{{employee_intance.emirates_expiry}}" required>
                                 <div class="valid-feedback">
@@ -267,7 +267,7 @@
                         </div>
                         <div class="form-row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2 mt-4">
-                                <label for="validationCustom02">insurance </label>
+                                <label for="validationCustom02">Insurance </label>
                                 <input type="text" name="insurence" class="form-control" id="validationCustom02" placeholder="Insurance "
                                 value="{{employee_intance.insurence}}"  required>
                                 <div class="valid-feedback">
@@ -275,7 +275,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2 mt-3">
-                                <label for="validationCustom02">insurance expiry</label>
+                                <label for="validationCustom02">Insurance Expiry</label>
                                 <input type="text" name="insurence_expiry" class="form-control" onfocus="(this.type='date')" onblur="(this.type='text')" id="validationCustom02" 
                                  placeholder="{{employee_intance.insurence_expiry}}" required>
                                 <div class="valid-feedback">
@@ -283,8 +283,10 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
-                                <h5><a href="{{employee_intance.insurence_copy.url}}" target="_blank" >copy</a></h5>
-                                <label for="validationCustom02">insurance copy</label>
+                                {% if employee_intance.insurance_copy %}
+                                <h5><a href="{{employee_intance.insurance_copy.url}}" target="_blank" >copy</a></h5>
+                                {% endif %}
+                                <label for="validationCustom02">Insurance Copy</label>
                                 <input type="file" name="insurence_copy" class="form-control" id="validationCustom02" placeholder="emirates"
                                 value="" required>
                                 <div class="valid-feedback">
@@ -294,8 +296,11 @@
                         </div>
                         <div class="form-row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                {% if employee_intance.passport_copy %}
                                 <h5><a href="{{employee_intance.passport_copy.url}}" target="_blank" >copy</a></h5>
-                                <label for="validationCustom02">passport copy</label>
+                                {% endif %}
+                                
+                                <label for="validationCustom02">Passport Copy</label>
                                 <input type="file" name="passport_copy" class="form-control" id="validationCustom02" placeholder="" value="{{employee_intance.passport_copy}}"
                                     required>
                                 <div class="valid-feedback">
@@ -303,8 +308,11 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-2">
+                                {% if employee_intance.visa_copy %}
                                 <h5><a href="{{employee_intance.visa_copy.url}}" target="_blank" >copy</a></h5>
-                                <label for="validationCustom02">visa copy</label>
+                                {% endif %}
+                
+                                <label for="validationCustom02">Visa Copy</label>
                                 <input type="file" name="visa_copy" class="form-control" id="validationCustom02" placeholder="visa"
                                 value="{{employee_intance.visa_copy}}" required>
                                 <div class="valid-feedback">
@@ -312,8 +320,11 @@
                                 </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 mb-4">
+                                {% if employee_intance.emirates_copy %}
                                 <h5><a href="{{employee_intance.emirates_copy.url}}" target="_blank" >copy</a></h5>
-                                <label for="validationCustom02">emirates copy</label>
+                                {% endif %}
+                                
+                                <label for="validationCustom02">Emirates Copy</label>
                                 <input type="file" name="emirates_copy" class="form-control" id="validationCustom02" placeholder="emirates"
                                 value="{{employee_intance.emirates_copy}}" required>
                                 <div class="valid-feedback">
@@ -323,8 +334,11 @@
                         </div>
                         <div class="form-row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-4">
+                                {% if employee_intance.other_document %}
                                 <h5><a href="{{employee_intance.other_document.url}}" target="_blank" >copy</a></h5>
-                                <label for="validationCustom02">other documents</label>
+                                {% endif %}
+                                
+                                <label for="validationCustom02">Other Documents</label>
                                 <input type="file" name="other_document" class="form-control" id="validationCustom02"
                                     placeholder="example@example.com" value="{{employee_intance.other_document}}" required>
                                 <div class="valid-feedback">
@@ -332,7 +346,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-4">
-                                <label for="validationCustom02">notification mail</label>
+                                <label for="validationCustom02">Notification Mail</label>
                                 <input type="email" name="notification_email" class="form-control" id="validationCustom02"
                                     placeholder="example@example.com" value="{{employee_intance.notification_email}}" required>
                                 <div class="valid-feedback">
@@ -340,7 +354,7 @@
                                 </div>
                             </div>
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
-                                <button class="btn btn-primary" type="submit">Submit form</button>
+                                <button class="btn btn-primary" type="submit">Submit</button>
                             </div>
                         </div>
                     </form>

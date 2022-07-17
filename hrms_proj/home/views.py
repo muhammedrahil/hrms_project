@@ -12,6 +12,7 @@ import os
 
 # login **************************************************************
 
+
 def user_login(request):
     if request.user.is_authenticated:
         return redirect(dashboard)
@@ -62,146 +63,200 @@ def addemployee(request):
     }
     return render(request,'add_employee.html',dict_emp)
 
+
 @login_required(login_url='/')
 def get_addemployee(request):
     if request.method == "POST":
-        # user 
-        
+        emp=Employee()
         user_id = request.user.id
+        if len(request.FILES)!=0:
+            try:
+                upload_image=request.FILES['image']
+                emp.upload_image=upload_image
+            except:
+                pass
+
+            try:
+                insurence_copy=request.FILES['insurence_copy']
+                emp.insurance_copy=insurence_copy
+            except:
+                pass
+
+            try:
+                passport_copy=request.FILES['passport_copy']
+                emp.passport_copy=passport_copy
+            except:
+                pass
+
+            try:
+                visa_copy=request.FILES['visa_copy']
+                emp.visa_copy=visa_copy
+            except:
+                pass
+          
+            try:
+                emirates_copy=request.FILES['emirates_copy']
+                emp.emirates_copy=emirates_copy
+            except:
+                pass
+
+            try:
+                other_document=request.FILES['other_document']
+                emp.other_document=other_document
+            except:
+                pass
+
+        try:
+            company=request.POST['company']
+            company_id = Company.objects.get(id = company)
+            emp.company=company_id
+        except:
+            pass
+
+        try:
+            catogory=request.POST['catogory']
+            catogory_id=Category.objects.get(id=catogory)
+            emp.catogory=catogory_id
+        except:
+            pass
+
+        try:
+            branch=request.POST['branch']
+            branch_id=Branch.objects.get(id=branch)
+            emp.branch=branch_id
+        except:
+            pass
+              
+        if len(request.POST['passport_expiry']) !=0:
+            passport_expiry=request.POST['passport_expiry']
+            emp.passport_expiry=passport_expiry
+
+        if len(request.POST['visa_expiry']) !=0:
+            visa_expiry=request.POST['visa_expiry']
+            emp.visa_expiry=visa_expiry
+
+        if len(request.POST['emirates_expiry']) !=0:
+            emirates_expiry=request.POST['emirates_expiry']
+            emp.emirates_expiry=emirates_expiry
+
+
+        if len(request.POST['insurence_expiry']) !=0:
+            insurence_expiry=request.POST['insurence_expiry']
+            emp.insurence_expiry=insurence_expiry
         
-        # file methode 
-        upload_image=request.FILES['image']
         fname=request.POST['fname']
         lname=request.POST['lname']
-        dob=request.POST['dob']
         email=request.POST['email']
+        dob=request.POST['dob']
         emp_id=request.POST['emp_id']
         uid=request.POST['uid']
         gender=request.POST['gender']
         blood=request.POST['blood']
         mobail_no=request.POST['mobail_no']
-        company=request.POST['company']
-        catogory=request.POST['catogory']
-        branch=request.POST['branch']
         passport_number=request.POST['passport_number']
         visa=request.POST['visa']
         emirates=request.POST['emirates']
-        passport_expiry=request.POST['passport_expiry']
-        visa_expiry=request.POST['visa_expiry']
-        emirates_expiry=request.POST['emirates_expiry']
         insurence=request.POST['insurence']
-        insurence_expiry=request.POST['insurence_expiry']
-        insurence_copy=request.FILES['insurence_copy']
-        passport_copy=request.FILES['passport_copy']
-        visa_copy=request.FILES['visa_copy']
-        emirates_copy=request.FILES['emirates_copy']
-        other_document=request.FILES['other_document']
         notification_email=request.POST['notification_email']
-        emp=Employee()
         user=User.objects.get(id=user_id)
-        emp.user=user
-        emp.upload_image=upload_image
+        emp.user=user       
         emp.fname=fname
-        emp.lname=lname
-        emp.dob=dob
+        emp.lname=lname      
         emp.email=email
+        emp.dob=dob
         emp.emp_id=emp_id
         emp.uid=uid
         emp.gender=gender
         emp.blood=blood
         emp.mobail_no=mobail_no
-        # forignkey id get 
-        company_id = Company.objects.get(id = company)
-        emp.company=company_id
-        catogory_id=Category.objects.get(id=catogory)
-        emp.catogory=catogory_id
-        branch_id=Branch.objects.get(id=branch)
-        emp.branch=branch_id
-        # forignkey id get 
         emp.passport_number=passport_number
         emp.visa=visa
-        emp.emirates=emirates
-        emp.passport_expiry=passport_expiry
-        emp.visa_expiry=visa_expiry
-        emp.emirates_expiry=emirates_expiry
+        emp.emirates=emirates            
         emp.insurence=insurence
-        emp.insurence_expiry=insurence_expiry
-        emp.insurance_copy=insurence_copy
-        emp.passport_copy=passport_copy
-        emp.visa_copy=visa_copy
-        emp.emirates_copy=emirates_copy
-        emp.other_document=other_document
         emp.notification_email=notification_email
         emp.save()
         return redirect(addemployee)
 
+
+# listemployee
+@login_required(login_url='/')
+def listemployee(request):
+    dict_employee ={
+        'employee':Employee.objects.all(),
+        'catogary':Category.objects.all(),
+        'company':Company.objects.all(),
+        'branch':Branch.objects.all()
+    }
+    return render(request,'emplist.html',dict_employee)
+
+
+@login_required(login_url='/')
 def edit_employee(request ,id):
     dict_edit={
-        'employee_intance':Employee.objects.get(id=id)
+        'employee_intance':Employee.objects.get(id=id),
+        'catogary':Category.objects.all(),
+        'company':Company.objects.all(),
+        'branch':Branch.objects.all()
     }
     return render(request,'emp_list_update.html',dict_edit)
 
 
+@login_required(login_url='/')
 def get_edit_employee(request,id):
     try:
         if request.method == 'POST':
             emp=Employee.objects.get(id=id)
-
             user_id = request.user.id
 
-        if len(request.FILES)!=0:
+            if len(request.FILES)!=0:
+                try:
+                    upload_image=request.FILES['image']
+                    image_path=emp.upload_image.path
+                    emp.upload_image=upload_image
+                    os.remove(image_path)
+                except:
+                    pass
 
-            try:
-                upload_image=request.FILES['image']
-                image_path=emp.upload_image.path
-                emp.upload_image=upload_image
-                os.remove(image_path)
-            except:
-                pass
+                try:
+                    insurance_copy=request.FILES['insurence_copy']             
+                    insurence_path=emp.insurance_copy.path
+                    emp.insurance_copy=insurance_copy
+                    os.remove(insurence_path)
+                except:
+                    pass
+            
+                try:
+                    passport_copy=request.FILES['passport_copy']
+                    passport_path=emp.passport_copy.path
+                    emp.passport_copy=passport_copy
+                    os.remove(passport_path)
+                except:
+                    pass
 
-            try:
-                insurance_copy=request.FILES['insurence_copy']             
-                insurence_path=emp.insurance_copy.path
-                emp.insurance_copy=insurance_copy
-                os.remove(insurence_path)
-            except:
-                pass
-        
+                try:
+                    visa_copy=request.FILES['visa_copy']
+                    visa_path=emp.visa_copy.path
+                    emp.visa_copy=visa_copy
+                    os.remove(visa_path)
+                except:
+                    pass
 
-            try:
-                passport_copy=request.FILES['passport_copy']
-                passport_path=emp.passport_copy.path
-                emp.passport_copy=passport_copy
-                os.remove(passport_path)
-            except:
-                pass
+                try:
+                    emirates_copy=request.FILES['emirates_copy']
+                    emirates_path=emp.emirates_copy.path
+                    emp.emirates_copy=emirates_copy    
+                    os.remove(emirates_path)
+                except:
+                    pass
 
-
-            try:
-                visa_copy=request.FILES['visa_copy']
-                visa_path=emp.visa_copy.path
-                emp.visa_copy=visa_copy
-                os.remove(visa_path)
-            except:
-                pass
-
-            try:
-                emirates_copy=request.FILES['emirates_copy']
-                emirates_path=emp.emirates_copy.path
-                emp.emirates_copy=emirates_copy    
-                os.remove(emirates_path)
-            except:
-                pass
-
-
-            try:
-                other_document=request.FILES['other_document']
-                other_document_path=emp.other_document.path
-                emp.other_document=other_document                    
-                os.remove(other_document_path)
-            except:
-                pass
- 
+                try:
+                    other_document=request.FILES['other_document']
+                    other_document_path=emp.other_document.path
+                    emp.other_document=other_document                    
+                    os.remove(other_document_path)
+                except:
+                    pass
+    
             try:
             
                 if len(request.POST['dob']) !=0:
@@ -276,24 +331,20 @@ def get_edit_employee(request,id):
 
     
 
-# listemployee
+
+
 @login_required(login_url='/')
-def listemployee(request):
-    dict_employee ={
-        'employee':Employee.objects.all(),
-        'catogary':Category.objects.all(),
-        'company':Company.objects.all(),
-        'branch':Branch.objects.all()
-
-    }
-    return render(request,'emplist.html',dict_employee)
-
 def delete_employee(request,id):
     employee_instance=Employee.objects.get(id=id)
     employee_instance.delete()
     return redirect(listemployee)
+    
 
-
+def company_employee(request):
+    if request.method == "POST":
+        company_id=request.POST['company_id']
+        print(company_id)
+    return  HttpResponse("<script>alert(company_id);window.history.back()</script>")
 
 # expairydetails
 @login_required(login_url='/')
@@ -303,11 +354,8 @@ def expairydetails(request):
         'catogary':Category.objects.all(),
         'company':Company.objects.all(),
         'branch':Branch.objects.all()
-
     }
     return render(request,'expiry.html',dict_expiry)
-
-
 
 # catogory****************************************************************
 
@@ -338,7 +386,6 @@ def update_category(request,id):
     return redirect(catogory)
 
 def get_update_category(request):
-    
     if request.method == 'POST':
         try:
             new_catogory=request.POST['catogary']
@@ -349,7 +396,6 @@ def get_update_category(request):
             catogory_instance.category=new_catogory
             catogory_instance.save()          
             return redirect(catogory)
-
         except:
             return HttpResponse("<script>alert('Catogary Not Found');window.history.back()</script>")
 # end catogory****************************************************************

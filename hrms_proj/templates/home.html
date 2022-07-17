@@ -14,7 +14,8 @@
     <link rel="stylesheet" href=" {% static '/vendor/fonts/fontawesome/css/fontawesome-all.css' %}">
     <link rel="stylesheet" href=" {% static '/vendor/charts/chartist-bundle/chartist.css' %}">
     <link rel="stylesheet" href=" {% static '/vendor/charts/morris-bundle/morris.css' %}">
-    <link rel="stylesheet" href=" {% static '/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet"
+        href=" {% static '/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css' %}">
     <link rel="stylesheet" href=" {% static '/vendor/charts/c3charts/c3.css' %}">
     <link rel="stylesheet" href=" {% static '/vendor/fonts/flag-icon-css/flag-icon.min.css' %}">
     <!-- datatable -->
@@ -124,30 +125,36 @@
                                 <li class="connection-list">
                                     <div class="row">
                                         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="{% static '/images/github.png  '%}"
-                                                    alt=""> <span>Github</span></a>
+                                            <a href="#" class="connection-item"><img
+                                                    src="{% static '/images/github.png  '%}" alt="">
+                                                <span>Github</span></a>
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="{% static '/images/dribbble.png  '%}"
-                                                    alt=""> <span>Dribbble</span></a>
+                                            <a href="#" class="connection-item"><img
+                                                    src="{% static '/images/dribbble.png  '%}" alt="">
+                                                <span>Dribbble</span></a>
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="{% static '/images/dropbox.png  '%}"
-                                                    alt=""> <span>Dropbox</span></a>
+                                            <a href="#" class="connection-item"><img
+                                                    src="{% static '/images/dropbox.png  '%}" alt="">
+                                                <span>Dropbox</span></a>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="{% static '/images/bitbucket.png  '%}"
-                                                    alt=""> <span>Bitbucket</span></a>
+                                            <a href="#" class="connection-item"><img
+                                                    src="{% static '/images/bitbucket.png  '%}" alt="">
+                                                <span>Bitbucket</span></a>
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="{% static '/images/mail_chimp.png  '%}"
-                                                    alt=""><span>Mail chimp</span></a>
+                                            <a href="#" class="connection-item"><img
+                                                    src="{% static '/images/mail_chimp.png  '%}" alt=""><span>Mail
+                                                    chimp</span></a>
                                         </div>
                                         <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 ">
-                                            <a href="#" class="connection-item"><img src="{% static '/images/slack.png  '%}"
-                                                    alt=""> <span>Slack</span></a>
+                                            <a href="#" class="connection-item"><img
+                                                    src="{% static '/images/slack.png  '%}" alt="">
+                                                <span>Slack</span></a>
                                         </div>
                                     </div>
                                 </li>
@@ -159,7 +166,8 @@
                         <li class="nav-item dropdown nav-user">
                             <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
-                                    src="{% static '/images/avatar-1.jpg' %}" alt="" class="user-avatar-md rounded-circle"></a>
+                                    src="{% static '/images/avatar-1.jpg' %}" alt=""
+                                    class="user-avatar-md rounded-circle"></a>
                             <div class="dropdown-menu dropdown-menu-right nav-user-dropdown"
                                 aria-labelledby="navbarDropdownMenuLink2">
                                 <div class="nav-user-info">
@@ -351,6 +359,10 @@
     <script src=" {% static '/vendor/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
     <script src=" {% static '/vendor/datatables/js/buttons.bootstrap4.min.js' %}"></script>
     <script src=" {% static '/vendor/datatables/js/data-table.js' %}"></script>
+    <script src=" {% static 'libs/js/validation.js' %}"></script>
+
+
+        {% block script %}{% endblock %}
 
 </body>
 
