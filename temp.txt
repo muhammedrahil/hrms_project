@@ -1,0 +1,3 @@
+    month_expiry_date = date.today() + timedelta(days=30)
+    employee=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) | Q(visa_expiry__lte=month_expiry_date)| Q(emirates_expiry__lte=month_expiry_date)| Q(insurence_expiry__lte=month_expiry_date))
+    print(employee[0].passport_expiry)

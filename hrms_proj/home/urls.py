@@ -14,8 +14,6 @@ urlpatterns =[
     path('edit_employee/<int:id>',views.edit_employee,name="edit_employee"),
     path('get_edit_employee/<int:id>',views.get_edit_employee,name="get_edit_employee"),
     path('delete_employee/<int:id>',views.delete_employee,name="delete_employee"),
-    path('company_employee',views.company_employee,name="company_employee"),
-
 
     path('expairydetails',views.expairydetails,name="expairydetails"),
 
@@ -30,9 +28,11 @@ urlpatterns =[
     path('delete_company/<int:id>',views.delete_company,name="delete_company"),
     path('edit_company/<int:id>',views.edit_company,name="edit_company"),
     path('update_company',views.update_company,name="update_company"),
-    # path('update_company/<int:id>',views.update_company,name="update_company"),
+
     
     path('branch',views.branch,name="branch"),
     path('get_branch',views.get_branch,name="get_branch"),
-    path('delete_branch/<int:id>',views.delete_branch,name="delete_branch"),
+    path('delete_branch/<int:id>',views.delete_branch,name="delete_branch"),    
+
+
 ]

@@ -1,6 +1,7 @@
 
+from asyncio.windows_events import NULL
+from calendar import month
 from datetime import datetime
-from urllib.request import Request
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate,login,logout
@@ -8,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 from django.contrib.auth.models import User
 import os
+from datetime import date, timedelta
+from django.db.models import Q
 # Create your views here.
 
 # login **************************************************************
@@ -38,6 +41,7 @@ def user_logout(request):
 # end  login **************************************************************
 
 
+
 # dashboard
 @login_required(login_url='/')   
 def dashboard(request):
@@ -45,11 +49,13 @@ def dashboard(request):
     no_company=len(Company.objects.all())
     no_catogery=len(Category.objects.all())
     no_branch=len(Branch.objects.all())
+    username = request.user.username
     dict_dash={
         'no_employee':no_employee,
         'no_company':no_company,
         'no_catogery':no_catogery,
-        'no_branch':no_branch
+        'no_branch':no_branch,
+        "user":username
     }
     return render(request,'dashboard.html',dict_dash)
 
@@ -181,13 +187,41 @@ def get_addemployee(request):
 # listemployee
 @login_required(login_url='/')
 def listemployee(request):
-    dict_employee ={
-        'employee':Employee.objects.all(),
-        'catogary':Category.objects.all(),
-        'company':Company.objects.all(),
-        'branch':Branch.objects.all()
-    }
-    return render(request,'emplist.html',dict_employee)
+    if request.method == "POST":
+        branch = request.POST['branch']
+        company = request.POST['company']
+        category = request.POST['catogary']
+        if len(branch) == 0 and len(company) == 0 and len(category)==0:
+            employee=Employee.objects.all()
+        elif len(branch) != 0 and len(company) == 0 and len(category)==0:
+            employee=Employee.objects.filter(branch=branch)
+        elif len(branch) == 0 and len(company) != 0 and len(category)==0:
+            employee=Employee.objects.filter(company=company)        
+        elif len(branch) == 0 and len(company) == 0 and len(category)!=0:
+            employee=Employee.objects.filter(catogory=category)
+        elif len(branch) != 0 and len(company) != 0 and len(category)==0:
+            employee=Employee.objects.filter(branch=branch,company=company)
+        elif len(branch) != 0 and len(company) == 0 and len(category)!= 0:
+            employee=Employee.objects.filter(branch=branch,catogory=category)
+        elif len(branch) == 0 and len(company) != 0 and len(category)!=0:
+            employee=Employee.objects.filter(company=company,catogory=category)
+        elif len(branch) != 0 and len(company) != 0 and len(category)!=0:
+            employee=Employee.objects.filter(branch=branch,company=company,catogory=category)
+        dict_employee ={
+            'employee':employee,
+            'catogary':Category.objects.all(),
+            'company':Company.objects.all(),
+            'branch':Branch.objects.all()
+        }
+        return render(request,'emplist.html',dict_employee)
+    else:
+        dict_employee ={
+            'employee':Employee.objects.all(),
+            'catogary':Category.objects.all(),
+            'company':Company.objects.all(),
+            'branch':Branch.objects.all()
+        }
+        return render(request,'emplist.html',dict_employee)
 
 
 @login_required(login_url='/')
@@ -207,7 +241,6 @@ def get_edit_employee(request,id):
         if request.method == 'POST':
             emp=Employee.objects.get(id=id)
             user_id = request.user.id
-
             if len(request.FILES)!=0:
                 try:
                     upload_image=request.FILES['image']
@@ -274,19 +307,43 @@ def get_edit_employee(request,id):
                     f_visa_expiry=datetime.strptime(visa_expiry,"%Y-%m-%d").date()
                     emp.visa_expiry=f_visa_expiry
 
+
                 if len(request.POST['emirates_expiry']) !=0:
                     emirates_expiry=request.POST['emirates_expiry']
                     f_emirates_expiry=datetime.strptime(emirates_expiry,"%Y-%m-%d").date()
                     emp.emirates_expiry=f_emirates_expiry
 
-                if len(request.POST['emirates_expiry']) !=0:
+
+                if len(request.POST['insurence_expiry']) !=0:
                     insurence_expiry=request.POST['insurence_expiry']
                     f_insurence_expiry=datetime.strptime(insurence_expiry,"%Y-%m-%d").date()
                     emp.insurence_expiry=f_insurence_expiry
 
+
             except:
                 return HttpResponse("<script>alert('failed');window.history.back()</script>")
 
+            try:
+                company=request.POST['company']
+                company_id = Company.objects.get(id = company)
+                emp.company=company_id
+            except:
+                pass
+
+            try:
+                catogory=request.POST['catogory']
+                catogory_id=Category.objects.get(id=catogory)
+                emp.catogory=catogory_id
+            except :
+                pass
+
+            try:
+                branch=request.POST['branch']
+                branch_id=Branch.objects.get(id=branch)
+                emp.branch=branch_id
+            except :
+                pass            
+                
             fname=request.POST['fname']
             lname=request.POST['lname']
             email=request.POST['email']
@@ -295,9 +352,6 @@ def get_edit_employee(request,id):
             gender=request.POST['gender']
             blood=request.POST['blood']
             mobail_no=request.POST['mobail_no']
-            company=request.POST['company']
-            catogory=request.POST['catogory']
-            branch=request.POST['branch']
             passport_number=request.POST['passport_number']
             visa=request.POST['visa']
             emirates=request.POST['emirates']
@@ -313,12 +367,6 @@ def get_edit_employee(request,id):
             emp.gender=gender
             emp.blood=blood
             emp.mobail_no=mobail_no
-            company_id = Company.objects.get(id = company)
-            emp.company=company_id
-            catogory_id=Category.objects.get(id=catogory)
-            emp.catogory=catogory_id
-            branch_id=Branch.objects.get(id=branch)
-            emp.branch=branch_id
             emp.passport_number=passport_number
             emp.visa=visa
             emp.emirates=emirates
@@ -329,9 +377,6 @@ def get_edit_employee(request,id):
     except:
         return HttpResponse("<script>alert('failed');window.history.back()</script>")
 
-    
-
-
 
 @login_required(login_url='/')
 def delete_employee(request,id):
@@ -340,22 +385,522 @@ def delete_employee(request,id):
     return redirect(listemployee)
     
 
-def company_employee(request):
-    if request.method == "POST":
-        company_id=request.POST['company_id']
-        print(company_id)
-    return  HttpResponse("<script>alert(company_id);window.history.back()</script>")
-
 # expairydetails
 @login_required(login_url='/')
 def expairydetails(request):
-    dict_expiry ={
-        'employee':Employee.objects.all(),
-        'catogary':Category.objects.all(),
-        'company':Company.objects.all(),
-        'branch':Branch.objects.all()
-    }
-    return render(request,'expiry.html',dict_expiry)
+    if request.method == "POST":
+        branch = request.POST['branch']
+        company = request.POST['company']
+        category = request.POST['catogary']
+        expiry_category = request.POST['expiry_category']
+        days_of_expiry = request.POST['days_of_expiry']
+        month_expiry_date = date.today() + timedelta(days=30)
+        ten_day_expiry=date.today() + timedelta(days=10)
+        one_week_expiry=date.today() + timedelta(days=7)
+        next_month_expiry=date.today() + timedelta(days=60)
+        three_month_expiry=date.today() + timedelta(days=90)
+        one_year_expiry=date.today() + timedelta(days=366)
+        if len(branch) == 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
+            employees=Employee.objects.all()
+        elif len(branch) != 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter(branch=branch)
+        elif len(branch) == 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter(company=company) 
+        elif len(branch) == 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter(catogory=category)
+
+        elif len(branch) == 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) != 0 and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter(passport_expiry__lte=month_expiry_date)
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter(emirates_expiry__lte=month_expiry_date)
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter(visa_expiry__lte=month_expiry_date)
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter(insurence_expiry__lte=month_expiry_date)
+
+        elif len(branch) == 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) == 0  and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter( Q(branch=branch) & Q(company=company))
+        elif len(branch) != 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category))
+
+        elif len(branch) != 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) != 0 and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(passport_expiry__lte=month_expiry_date)) 
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(emirates_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(visa_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(insurence_expiry__lte=month_expiry_date))
+        
+        elif len(branch) != 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+        elif len(branch) == 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) == 0  and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter( Q(company=company) & Q(catogory=category))
+        elif len(branch) == 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) != 0 and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter( Q(company=company) & Q(passport_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter( Q(company=company) & Q(emirates_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter( Q(company=company) & Q(visa_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter( Q(company=company) & Q(insurence_expiry__lte=month_expiry_date))
+
+        elif len(branch) == 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(company=company) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(company=company) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(company=company) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(company=company) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+
+        elif len(branch) == 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) != 0 and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date))
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date))
+
+        elif len(branch) == 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) == 0 and len(days_of_expiry) != 0:
+
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+        elif len(branch) == 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) != 0 and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) == 0  and len(days_of_expiry) == 0:
+            employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(catogory=category) )   
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) != 0  and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(passport_expiry__lte=month_expiry_date))           
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(emirates_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(visa_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(insurence_expiry__lte=month_expiry_date))  
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) == 0  and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(company=company) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(company=company) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(company=company) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+        elif len(branch) != 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date))           
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date))  
+
+
+        elif len(branch) != 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) == 0  and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(catogory=category) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(catogory=category) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(catogory=category) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+
+        elif len(branch) != 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+        elif len(branch) == 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter( Q(company=company) & Q(catogory=category)  & Q(passport_expiry__lte=month_expiry_date))           
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter( Q(company=company) & Q(catogory=category)  & Q(emirates_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter( Q(company=company) & Q(catogory=category)  & Q(visa_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter( Q(company=company) & Q(catogory=category)  & Q(insurence_expiry__lte=month_expiry_date))  
+
+        elif len(branch) == 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) == 0  and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+        elif len(branch) == 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(company=company) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(company=company) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(company=company) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(company=company) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(company=company) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(company=company) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(company=company) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(company=company) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(company=company) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(company=company) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(company=company) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(company=company) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(company=company) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(company=company) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(company=company) &  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(company=company) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+        elif len(branch) == 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(catogory=category)&  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) == 0:
+            if len(expiry_category) == 1:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date))           
+            elif len(expiry_category) == 2:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 3:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date))   
+            elif len(expiry_category) == 4:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date))  
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) == 0  and len(days_of_expiry) != 0:
+            if   len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(Q(branch=branch) &  Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company) & Q(catogory=category) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) == 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company)  &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(Q(branch=branch) & Q(company=company)  &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company) &  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(company=company)  & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+
+        elif len(branch) != 0 and len(company) == 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category)& Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(Q(branch=branch) &  Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(Q(branch=branch) &  Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(branch=branch) & Q(catogory=category) &  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(branch=branch) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+        elif len(branch) == 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category)& Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(Q(company=company) &  Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(Q(company=company) &  Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter( Q(company=company) & Q(catogory=category) &  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter( Q(company=company) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+
+        elif len(branch) != 0 and len(company) != 0 and len(category) != 0 and len(expiry_category) != 0  and len(days_of_expiry) != 0:
+            if  len(expiry_category) == 1 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(   Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))  
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 1 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(passport_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category)& Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 2 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(emirates_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(company=company) &  Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 3 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) & Q(company=company) &  Q(catogory=category) &  Q(visa_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))
+
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 1:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_week_expiry) | Q(visa_expiry__lte=one_week_expiry)| Q(emirates_expiry__lte=one_week_expiry)| Q(insurence_expiry__lte=one_week_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 2:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=next_month_expiry) | Q(visa_expiry__lte=next_month_expiry)| Q(emirates_expiry__lte=next_month_expiry)| Q(insurence_expiry__lte=next_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 3:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) & Q(catogory=category) &  Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=three_month_expiry) | Q(visa_expiry__lte=three_month_expiry)| Q(emirates_expiry__lte=three_month_expiry)| Q(insurence_expiry__lte=three_month_expiry))
+            elif  len(expiry_category) == 4 and len(days_of_expiry) == 4:
+                employees=Employee.objects.filter(  Q(branch=branch) &  Q(company=company) &  Q(catogory=category) & Q(insurence_expiry__lte=month_expiry_date) & Q(passport_expiry__lte=one_year_expiry) | Q(visa_expiry__lte=one_year_expiry)| Q(emirates_expiry__lte=one_year_expiry)| Q(insurence_expiry__lte=one_year_expiry))        
+
+        dict_expiry ={
+            'employee':employees,
+            'catogary':Category.objects.all(),
+            'company':Company.objects.all(),
+            'branch':Branch.objects.all(),
+            "red":ten_day_expiry
+        }
+        return render(request,'expiry.html',dict_expiry)
+    else:
+        month_expiry_date = date.today() + timedelta(days=30)
+        ten_day_expiry=date.today() + timedelta(days=10)
+        employee=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) | Q(visa_expiry__lte=month_expiry_date)| Q(emirates_expiry__lte=month_expiry_date)| Q(insurence_expiry__lte=month_expiry_date))
+        dict_expiry ={
+            'employee':employee,  
+            'catogary':Category.objects.all(),
+            'company':Company.objects.all(),
+            'branch':Branch.objects.all(),
+            "red":ten_day_expiry
+        }
+        return render(request,'expiry.html',dict_expiry)
 
 # catogory****************************************************************
 
@@ -379,7 +924,7 @@ def delete_category(request,id):
     category_instance.delete()
     return redirect(catogory)
 
-
+# this not working 
 def update_category(request,id):
     request.session['update_category_id']=id
     print(request.session['update_category_id'])
@@ -398,6 +943,9 @@ def get_update_category(request):
             return redirect(catogory)
         except:
             return HttpResponse("<script>alert('Catogary Not Found');window.history.back()</script>")
+
+# this not working 
+
 # end catogory****************************************************************
 
 
@@ -418,6 +966,8 @@ def get_company(request):
     cam.save()
     return  redirect(company)
 
+
+# this not working 
 def edit_company(request,id):
     request.session['edit_company_id']=id  
     return HttpResponse("<script>alert('hay')</script>")
@@ -434,15 +984,15 @@ def update_company(request):
             return redirect(company)
         except :
             return HttpResponse("<script>alert('Company Not Found');window.history.back()</script>")
+# this not working 
+
 
 def delete_company(request,id):
     company_instance=Company.objects.get(id=id)
     company_instance.delete()
     return redirect(company)
 
-# def update_company(request,id):
 
-#     return redirect(company)
 
 # end company****************************************************************
 
@@ -469,4 +1019,8 @@ def delete_branch(request,id):
     branch_instance=Branch.objects.get(id=id)
     branch_instance.delete()
     return redirect(branch)
+
+
+
+
 # end  branch***********************************************************************
