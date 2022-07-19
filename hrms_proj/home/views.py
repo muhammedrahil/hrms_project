@@ -1,6 +1,7 @@
 
-from asyncio.windows_events import NULL
-from calendar import month
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 from datetime import datetime
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -45,6 +46,7 @@ def user_logout(request):
 # dashboard
 @login_required(login_url='/')   
 def dashboard(request):
+    send_mail_user(request)
     no_employee=len(Employee.objects.all())
     no_company=len(Company.objects.all())
     no_catogery=len(Category.objects.all())
@@ -394,12 +396,19 @@ def expairydetails(request):
         category = request.POST['catogary']
         expiry_category = request.POST['expiry_category']
         days_of_expiry = request.POST['days_of_expiry']
-        month_expiry_date = date.today() + timedelta(days=30)
+        month_expiry_date = date.today().replace(day=1) + timedelta(days=29)
+
         ten_day_expiry=date.today() + timedelta(days=10)
-        one_week_expiry=date.today() + timedelta(days=7)
-        next_month_expiry=date.today() + timedelta(days=60)
-        three_month_expiry=date.today() + timedelta(days=90)
-        one_year_expiry=date.today() + timedelta(days=366)
+
+        one_week_expiry=date.today() + timedelta(weeks=1)
+
+        this_month_last = date.today().replace(day=1) + timedelta(days=29)
+        next_month_expiry=date.today().replace(day=30) + timedelta(days=this_month_last.day)
+
+        three_month_expiry=date.today().replace(day=1) + timedelta(days=120)
+        
+        one_year_expiry=date.today().replace(month=12,day=30) + timedelta(days=365)
+        
         if len(branch) == 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
             employees=Employee.objects.all()
         elif len(branch) != 0 and len(company) == 0 and len(category) == 0 and len(expiry_category) == 0 and len(days_of_expiry) == 0:
@@ -890,7 +899,7 @@ def expairydetails(request):
         }
         return render(request,'expiry.html',dict_expiry)
     else:
-        month_expiry_date = date.today() + timedelta(days=30)
+        month_expiry_date = date.today().replace(day=1) + timedelta(days=29)
         ten_day_expiry=date.today() + timedelta(days=10)
         employee=Employee.objects.filter( Q(passport_expiry__lte=month_expiry_date) | Q(visa_expiry__lte=month_expiry_date)| Q(emirates_expiry__lte=month_expiry_date)| Q(insurence_expiry__lte=month_expiry_date))
         dict_expiry ={
@@ -1020,7 +1029,42 @@ def delete_branch(request,id):
     branch_instance.delete()
     return redirect(branch)
 
-
-
-
 # end  branch***********************************************************************
+
+def send_mail_user(request):
+    try:
+        next_month_expiry_date = date.today() + timedelta(days=60)
+        month_expiry_date = date.today() + timedelta(days=30)
+        employee=Employee.objects.filter( (Q(passport_expiry__lte=next_month_expiry_date) & Q(passport_expiry__gte=month_expiry_date)) | (Q(visa_expiry__lte=next_month_expiry_date) & Q(visa_expiry__gte=month_expiry_date))| (Q(emirates_expiry__lte=next_month_expiry_date) & Q(emirates_expiry__gte=month_expiry_date))| (Q(insurence_expiry__lte=next_month_expiry_date) & Q(insurence_expiry__gte=month_expiry_date)))
+        
+        email_list=[]
+        passport_expiry_list=[]
+        visa_expiry_list=[]
+        emirates_expiry__list=[]
+        insurence_expiry__list=[]
+
+        employee_count=len(employee)
+        for i in range(0,employee_count):
+            email_list.append(employee[i].notification_email)
+            passport_expiry_list.append(employee[i].passport_expiry)  
+            visa_expiry_list.append(employee[i].visa_expiry)  
+            emirates_expiry__list.append(employee[i].emirates_expiry)  
+            insurence_expiry__list.append(employee[i].insurence_expiry)       
+
+
+        print(email_list)
+        print(passport_expiry_list)
+        print(visa_expiry_list)
+        print(emirates_expiry__list)
+        print(insurence_expiry__list)
+        
+        # subject = 'Code Band'
+        # message = 'Sending Email through Gmail'
+        # send_mail(subject, 
+        #         message, settings.EMAIL_HOST_USER, email_list, fail_silently=False)
+            
+        return 
+    except:
+        return HttpResponse("<script>alert('mail send Failed');window.history.back()</script>")
+
+
