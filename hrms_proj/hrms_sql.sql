@@ -128,7 +128,7 @@ CREATE TABLE `auth_user` (
 
 insert  into `auth_user`(`id`,`password`,`last_login`,`is_superuser`,`username`,`first_name`,`last_name`,`email`,`is_staff`,`is_active`,`date_joined`) values 
 (1,'pbkdf2_sha256$320000$43lWVhNQqKyiktly8z1qUg$qFLTAq+hpGLkzxLWHTlCsEFwQpq1YGkK6/JJa0hZBaM=','2022-07-16 08:47:05.785510',1,'hrmsproject','','','mrahil7510@gmail.com',1,1,'2022-07-15 11:32:11.126584'),
-(2,'pbkdf2_sha256$320000$RUfBJFP1EO1U22a87biAFH$5FSgbE5QbEs6OpSzpa+c07ug6xEKwtks0RPO2FK2ONk=','2022-07-16 08:14:15.559904',0,'admin','','','',0,1,'2022-07-15 11:33:25.000000');
+(2,'pbkdf2_sha256$320000$RUfBJFP1EO1U22a87biAFH$5FSgbE5QbEs6OpSzpa+c07ug6xEKwtks0RPO2FK2ONk=','2022-07-20 09:35:01.564709',0,'admin','','','',0,1,'2022-07-15 11:33:25.000000');
 
 /*Table structure for table `auth_user_groups` */
 
@@ -229,7 +229,7 @@ CREATE TABLE `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `django_migrations` */
 
@@ -253,7 +253,9 @@ insert  into `django_migrations`(`id`,`app`,`name`,`applied`) values
 (17,'auth','0012_alter_user_first_name_max_length','2022-07-15 11:29:56.415636'),
 (18,'home','0001_initial','2022-07-15 11:29:56.542323'),
 (19,'sessions','0001_initial','2022-07-15 11:29:56.562011'),
-(20,'home','0002_alter_employee_date_alter_employee_user','2022-07-15 11:40:45.926710');
+(20,'home','0002_alter_employee_date_alter_employee_user','2022-07-15 11:40:45.926710'),
+(21,'home','0003_alter_employee_dob_alter_employee_emirates_expiry_and_more','2022-07-16 19:23:28.880851'),
+(22,'home','0004_alter_employee_mobail_no','2022-07-17 04:05:40.522472');
 
 /*Table structure for table `django_session` */
 
@@ -272,8 +274,12 @@ CREATE TABLE `django_session` (
 insert  into `django_session`(`session_key`,`session_data`,`expire_date`) values 
 ('9b1t6d5c5iz5khr0ryk46b1c8zbgbzzl','.eJxVjEsOwiAUAO_C2hB-j4JL9z0DefykaiAp7cp4d0vShW5nJvMmDvetuL2n1S2RXAknl1_mMTxTHSI-sN4bDa1u6-LpSOhpO51bTK_b2f4NCvYytgoCqKBMFCoqBJAWpNDAQRxKej1pcyBk3vDMfI6T4ZxnZNIqabMhny-fUDYk:1oCYVk:zYv8TiF_ye8uqsP_9gCniuDy8QgF5DPjZeD8o6tiaV8','2022-07-30 03:30:32.984024'),
 ('bel3sl75yj8gvfn51vhhlddv1pj8g8oj','.eJxVjssOgjAQRf-la9PQx0Bx6d5vaKadqaBIDYWFMf67YFjo9pybk_sSHpe580vhyfckjkKJwy8LGG88boKuOF6yjHmcpz7IbSJ3W-Q5Ew-nffsX6LB0W9ZCBButI23JIoBpwegaFOhVmVA3tVsRVsGpVIVEjVNKJaxMa02b3Brl-2PIT2bP1M_fs_r9AWE2PZE:1oCO26:DSGctFHXzqIl-5Xf20BVcskVEtmifFgG1eaBOi7ObmM','2022-07-29 16:19:14.523390'),
-('nwsjovvnnnjdazk98urz9p0z1dav9ngz','.eJxVjEsOwiAUAO_C2hB-j4JL9z0DefykaiAp7cp4d0vShW5nJvMmDvetuL2n1S2RXAknl1_mMTxTHSI-sN4bDa1u6-LpSOhpO51bTK_b2f4NCvYytgoCqKBMFCoqBJAWpNDAQRxKej1pcyBk3vDMfI6T4ZxnZNIqabMhny-fUDYk:1oCdS5:9KJxrPpucBcji49e7jmPfkKRUrVPd4b4Kl3VfzTNzeM','2022-07-30 08:47:05.795153'),
-('qtpcefcs2gwranhtzd3tpwd2pfbpamvu','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oCcKS:UkmDWqewCUSlwv2HIVXBTXo7RzFMmHWTauSUhfqbq9o','2022-07-30 07:35:08.064070');
+('cw82ouclmc8q45uaq4b6550tnvraf22j','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oDxNZ:LdjAZwbuMNm7VyV3ocJAagbVFBUj1fzQ1tHHBa5TQwM','2022-08-03 00:15:53.100832'),
+('fvz1rqtcoi2selikyg18dwahiocmpqui','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oDqzx:_rOAnZCyqhC_fwlMsSriaWDAvM3x2eP0x8-w1mJ7REo','2022-08-02 17:27:05.524734'),
+('fxgqo7775gax2k01yll7f2px9pqllqdy','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oE66f:mNnz3lJ0JuOTO2igeRathbrRTh0qzpV7bkwaCdrnVo4','2022-08-03 09:35:01.572707'),
+('gi241c7guzizirku9bcfdwznc1rj9ipb','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oDREd:CYHF3YLePJN42Ogx8WnvwnVcdRAclbLCbInlJL9VBR4','2022-08-01 13:56:31.714569'),
+('qtpcefcs2gwranhtzd3tpwd2pfbpamvu','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oCcKS:UkmDWqewCUSlwv2HIVXBTXo7RzFMmHWTauSUhfqbq9o','2022-07-30 07:35:08.064070'),
+('w1g3f1jkeuyxwenrgy5rpfs9ni4svv0h','.eJxVjEEOwiAQRe_C2hAoU2Rcuu8ZyMCAVA0kpV0Z765NutDtf-_9l_C0rcVvPS1-ZnERgzj9boHiI9Ud8J3qrcnY6rrMQe6KPGiXU-P0vB7u30GhXr41RrbBuIyDIgSIRtnEChyQzlaHrIzOKZgRkrYAjOg0u3jG6JBMzqN4fwDbpje4:1oDgYg:OnBmxWDPv1VtOr6YxV_vDmh5Plf04kO1zi7aS8yZTxY','2022-08-02 06:18:14.429197');
 
 /*Table structure for table `home_branch` */
 
@@ -283,7 +289,7 @@ CREATE TABLE `home_branch` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `branch` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `home_branch` */
 
@@ -295,7 +301,7 @@ CREATE TABLE `home_category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `category` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `home_category` */
 
@@ -307,7 +313,7 @@ CREATE TABLE `home_company` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `company` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `home_company` */
 
@@ -322,21 +328,21 @@ CREATE TABLE `home_employee` (
   `upload_image` varchar(100) NOT NULL,
   `fname` varchar(50) NOT NULL,
   `lname` varchar(50) NOT NULL,
-  `dob` date NOT NULL,
+  `dob` date DEFAULT NULL,
   `email` varchar(254) NOT NULL,
   `emp_id` varchar(30) NOT NULL,
   `uid` varchar(30) NOT NULL,
   `gender` varchar(30) NOT NULL,
   `blood` varchar(20) NOT NULL,
-  `mobail_no` int(11) NOT NULL,
+  `mobail_no` int(11) DEFAULT NULL,
   `passport_number` varchar(200) NOT NULL,
   `visa` varchar(255) NOT NULL,
   `emirates` varchar(255) NOT NULL,
-  `passport_expiry` date NOT NULL,
-  `visa_expiry` date NOT NULL,
-  `emirates_expiry` date NOT NULL,
+  `passport_expiry` date DEFAULT NULL,
+  `visa_expiry` date DEFAULT NULL,
+  `emirates_expiry` date DEFAULT NULL,
   `insurence` varchar(255) NOT NULL,
-  `insurence_expiry` date NOT NULL,
+  `insurence_expiry` date DEFAULT NULL,
   `insurance_copy` varchar(100) NOT NULL,
   `passport_copy` varchar(100) NOT NULL,
   `visa_copy` varchar(100) NOT NULL,
