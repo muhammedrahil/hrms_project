@@ -144,9 +144,10 @@
                                 <tr>
                                     <td>{{forloop.counter}}</td>
                                     <td>{{i.company}}</td>
-                                    <td> <span><a href="{% url 'edit_company' id=i.id %}" class="mr-4" data-toggle="modal" data-target="#exampleModa2"
+                                    <td> <span>
+                                        <!-- <a href="{% url 'edit_company' id=i.id %}" class="mr-4" data-toggle="modal" data-target="#exampleModa2"
                                                 data-whatever="@mdo" data-placement="top" title="Edit"><i
-                                                    class="fa fa-edit color-muted"></i> </a>
+                                                    class="fa fa-edit color-muted"></i> </a> -->
 
                                             <a href="{% url 'delete_company' id=i.id %}" data-toggle="tooltip"
                                                 data-placement="top" title="Delete"><i

@@ -88,14 +88,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit message</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <!-- catogary form  -->
-                    <form action="{% url 'get_update_category' %}" method="post">
+                    <form action="{% url 'update_category' id=-1 %}" method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="recipient-name" class="col-form-label">Category name</label>
@@ -104,7 +104,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Add</button>
+                            <button type="submit" class="btn btn-primary">Edit</button>
                         </div>
                     </form>
                     <!-- catogary form  -->
@@ -132,7 +132,6 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Category</th>
-
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -142,12 +141,12 @@
                                 <tr>
                                     <td>{{forloop.counter}}</td>
                                     <td>{{i.category}}</td>
-
-                                    <td> <span><a href="{% url 'update_category' id=i.id %}"  class="mr-4" id="id"   data-placement="top" data-toggle="modal" data-target="#exampleModa2"
+                                    <td><span>
+                                         <!-- <a class="mr-4" id="id"   data-placement="top"  data-toggle="modal" data-target="#exampleModa2"
                                         data-whatever="@mdo"
-                                                title="Edit"><i class="fa fa-edit color-muted"></i> </a>
+                                                title="Edit"><i class="fa fa-edit color-muted"></i> </a> -->
 
-
+                                                
                                             <a href="{% url 'delete_category' id=i.id %}" data-toggle="tooltip"
                                                 data-placement="top" title="Delete"><i
                                                     class="fa fa-trash color-danger"></i></a></span></td>
@@ -174,4 +173,7 @@
 
 
 </div>
+
+
+
 {% endblock %}
