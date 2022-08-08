@@ -14,8 +14,28 @@ jQuery(document).ready(function($) {
 
         $(document).ready(function() {
             var table = $('table.second').DataTable({
-                lengthChange: false,
-                buttons: ['copy', 'excel', 'pdf', 'print', 'colvis']
+                // lengthChange: true,
+                select:true,
+                dom:'Blftip',
+                lenghtMenu:[[10,25,50,-1],['10 files','25 files','50 files','All']],
+                dom:'Bfrtip',
+                 buttons: ['copy', 'excel', 'print', 
+                 {
+                    extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'A4',
+            footer: false,
+                    title: '',
+                    exportOptions: {
+                        columns: "thead th:not(.noExport)"
+                    },
+                },
+                , 'colvis','pageLength'
+                ]
+                 
+
+
+            
             });
 
             table.buttons().container()

@@ -1,0 +1,25 @@
+        employee_visa_expiry=Employee.objects.filter( (Q(visa_expiry__lte=next_month_expiry_date) & Q(visa_expiry__gte=month_expiry_date)))
+        employee_visa_expiry_email_list=[]
+        visa_expiry_list=[]
+        employee_visa_count=len(employee_visa_expiry)
+        for i in range(0,employee_visa_count):
+            employee_visa_expiry_email_list.append(employee_visa_expiry[i].notification_email)
+            visa_expiry_list.append(employee_visa_expiry[i].visa_expiry)  
+
+
+        employee_emirates_expiry=Employee.objects.filter( (Q(emirates_expiry__lte=next_month_expiry_date) & Q(emirates_expiry__gte=month_expiry_date)))
+        employee_emirates_expiry_email_list=[]
+        emirates_expiry__list=[]
+        employee_emirate_count=len(employee_emirates_expiry)
+        for i in range(0,employee_emirate_count):
+            employee_emirates_expiry_email_list.append(employee_emirates_expiry[i].notification_email)
+            emirates_expiry__list.append(employee_emirates_expiry[i].emirates_expiry)  
+
+
+        employee_insurence_expiry=Employee.objects.filter( (Q(insurence_expiry__lte=next_month_expiry_date) & Q(insurence_expiry__gte=month_expiry_date)))
+        employee_insurence_expiry_email_list=[]
+        insurence_expiry__list=[]
+        employee_insurence_count=len(employee_insurence_expiry)
+        for i in range(0,employee_insurence_count):
+            employee_insurence_expiry_email_list.append(employee_insurence_expiry[i].notification_email)
+            insurence_expiry__list.append(employee_insurence_expiry[i].insurence_expiry)

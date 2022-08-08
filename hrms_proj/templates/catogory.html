@@ -17,8 +17,10 @@
                 <div class="page-breadcrumb">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}" class="breadcrumb-link">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="javascript:void(0);" class="breadcrumb-link">Category</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard'%}"
+                                    class="breadcrumb-link">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);"
+                                    class="breadcrumb-link">Category</a></li>
                             <li class="breadcrumb-item active" aria-current="page">company list</li>
                         </ol>
                     </nav>
@@ -66,7 +68,7 @@
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="recipient-name" class="col-form-label">Category name</label>
-                            <input type="text" class="form-control" name="catogary" placeholder="Category name" required 
+                            <input type="text" class="form-control" name="catogary" placeholder="Category name" required
                                 id="recipient-name">
                         </div>
                         <div class="modal-footer">
@@ -82,36 +84,7 @@
 
 
     <!-- momant end -->
-    <!-- momant -->
-    <div class="modal fade" id="exampleModa2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit message</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- catogary form  -->
-                    <form action="{% url 'update_category' id=-1 %}" method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">Category name</label>
-                            <input type="text" class="form-control" name="catogary" placeholder="Category name"
-                                id="recipient-name">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Edit</button>
-                        </div>
-                    </form>
-                    <!-- catogary form  -->
-                </div>
-            </div>
-        </div>
-    </div>
+
 
 
 
@@ -132,7 +105,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Category</th>
-                                    <th>Action</th>
+                                    <th class="noExport">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -140,25 +113,67 @@
 
                                 <tr>
                                     <td>{{forloop.counter}}</td>
-                                    <td>{{i.category}}</td>
+                                    <td>
+                                        <p class="d-inline" id="para_catogory">{{i.category}}</p>
+                                    </td>
                                     <td><span>
-                                         <!-- <a class="mr-4" id="id"   data-placement="top"  data-toggle="modal" data-target="#exampleModa2"
-                                        data-whatever="@mdo"
-                                                title="Edit"><i class="fa fa-edit color-muted"></i> </a> -->
 
-                                                
-                                            <a href="{% url 'delete_category' id=i.id %}" data-toggle="tooltip"
-                                                data-placement="top" title="Delete"><i
-                                                    class="fa fa-trash color-danger"></i></a></span></td>
+                                            <!-- momant -->
+                                            <div class="modal fade" id="exampleModa2" tabindex="-1" role="dialog"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Edit message
+                                                            </h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- catogary form  -->
+                                                            <form action="" method="post">
+                                                                {% csrf_token %}
+                                                                <div class="form-group">
+                                                                    <label for="recipient-name"
+                                                                        class="col-form-label">Category name</label>
+                                                                    <input type="text" class="form-control"
+                                                                        name="catogary" placeholder="Category name" value="{{i.category}}"
+                                                                        id="recipient-name">
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">Close</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-primary">Edit</button>
+                                                                </div>
+                                                            </form>
+                                                            <!-- catogary form  -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <a class="mr-4 d-inline" href="javascript:void(0)" title="Edit"><i
+                                                    class="fa fa-edit color-muted" 
+                                                    data-placement="top" data-toggle="modal" data-target="#exampleModa2"
+                                                    data-whatever="@mdo"></i> </a>
+
+                                            <a href="{% url 'delete_category' id=i.id %}" class="d-inline"
+                                                data-toggle="tooltip" data-placement="top" title="Delete"><i
+                                                    class="fa fa-trash color-danger"></i></a>
+                                        </span>
+                                    </td>
                                 </tr>
+
                                 {% endfor %}
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th>#</th>
                                     <th>Category</th>
-
-                                    <th>Action</th>
+                                    <th class="noExport">Action</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -174,6 +189,39 @@
 
 </div>
 
+{% block script %}
+
+<script>
+    function click_function() {
+        document.getElementById('in_catogory').style.visibility = 'hidden';
+    }
+</script>
 
 
 {% endblock %}
+
+
+
+{% endblock %}
+
+
+<!-- <script>
+    $(document).ready(function () {
+        $("body").on("click","#edit_id",function(e) {
+            $("#in_catogory").show();
+            var data = {
+                'name': name
+            }
+            $.ajax({
+                url: "{% url 'update_category' %}",
+                method: 'GET',
+                data: data,
+                dataType: 'json',
+            });
+        });
+    });
+    
+    </script> -->
+
+
+    

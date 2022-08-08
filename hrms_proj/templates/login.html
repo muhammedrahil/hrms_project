@@ -38,6 +38,11 @@
         <div class="card ">
             <div class="card-header text-center"><a href="../index.html"><img class="logo-img" src=" {% static '/images/logo.png' %}" alt="logo"></a><span class="splash-description">Please enter your user information.</span></div>
             <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                    <p style="color: red">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
                 <form action="{% url 'user_login'%}" method="post">
                     {% csrf_token %}
                     <div class="form-group">

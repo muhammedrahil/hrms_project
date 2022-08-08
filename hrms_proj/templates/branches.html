@@ -59,7 +59,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <form action="{% url 'get_branch'%}" method="post">
+              <form action="" method="post">
                 {% csrf_token %}
                 <div class="form-group">
                   <label for="recipient-name" class="col-form-label">Branch name</label>
@@ -106,7 +106,7 @@
                                     <th>#</th>
                                     <th>Branch</th>
 
-                                    <th>Action</th>
+                                    <th class="noExport">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,9 +116,9 @@
                                     <td>{{i.branch}}</td>
                            
                                     <td>  <span>
-                                        <!-- <a href="h" class="mr-4" data-toggle="tooltip"
+                                        <a href="h" class="mr-4" data-toggle="tooltip"
                                         data-placement="top" title="Edit"><i
-                                            class="fa fa-edit color-muted"></i> </a> -->
+                                            class="fa fa-edit color-muted"></i> </a>
                                             
                                             <a
                                         href="{% url 'delete_branch' id=i.id %}" data-toggle="tooltip"
@@ -132,8 +132,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Branch</th>
-
-                                    <th>Action</th>
+                                    <th class="noExport">Action</th>
                                 </tr>
                             </tfoot>
                         </table>

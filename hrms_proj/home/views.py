@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from .models import *
 from django.contrib.auth.models import User
+from django.views.decorators.cache import never_cache
 import os
 from datetime import date, timedelta
 from django.db.models import Q
@@ -17,7 +18,7 @@ from django.db.models import Q
 
 # login **************************************************************
 
-
+@never_cache
 def user_login(request):
     if request.user.is_authenticated:
         return redirect(dashboard)
@@ -29,7 +30,8 @@ def user_login(request):
             login(request,user)
             return redirect(dashboard)
         else:
-            return HttpResponse("<script>alert('sorry please login');window.history.back()</script>")
+            messages.success(request,"Incorrect Username or Password")
+            return redirect(user_login)
     return render(request,'login.html')
 
 
@@ -45,9 +47,10 @@ def user_logout(request):
 
 
 # dashboard
-@login_required(login_url='/')   
+@login_required(login_url='/') 
+@never_cache  
 def dashboard(request):
-    # send_mail_user(request)
+    send_mail_user(request)
     no_employee=len(Employee.objects.all())
     no_company=len(Company.objects.all())
     no_catogery=len(Category.objects.all())
@@ -937,9 +940,10 @@ def delete_category(request,id):
     return redirect(catogory)
 
 # this not working 
-def update_category(request,id):
-    id=id
-    print(id)
+
+def update_category(request):
+    name=request.GET['name']
+    print(name)
     return redirect(catogory)
 
 
@@ -1027,37 +1031,15 @@ def send_mail_user(request):
         days_in_month = lambda dt: monthrange(dt.year, dt.month)[1]
         today = date.today()
         next_month_expiry_date = today.replace(day=30) + timedelta(days_in_month(today))
-        print(next_month_expiry_date)
         month_expiry_date = today.replace(day=1) + timedelta(days_in_month(today))
-        print(month_expiry_date)
-        employee=Employee.objects.filter( (Q(passport_expiry__lte=next_month_expiry_date) & Q(passport_expiry__gte=month_expiry_date)) | (Q(visa_expiry__lte=next_month_expiry_date) & Q(visa_expiry__gte=month_expiry_date))| (Q(emirates_expiry__lte=next_month_expiry_date) & Q(emirates_expiry__gte=month_expiry_date))| (Q(insurence_expiry__lte=next_month_expiry_date) & Q(insurence_expiry__gte=month_expiry_date)))
-        
-        email_list=[]
-        passport_expiry_list=[]
-        visa_expiry_list=[]
-        emirates_expiry__list=[]
-        insurence_expiry__list=[]
 
-        employee_count=len(employee)
-        for i in range(0,employee_count):
-            email_list.append(employee[i].notification_email)
-            passport_expiry_list.append(employee[i].passport_expiry)  
-            visa_expiry_list.append(employee[i].visa_expiry)  
-            emirates_expiry__list.append(employee[i].emirates_expiry)  
-            insurence_expiry__list.append(employee[i].insurence_expiry)       
+        employee_passport_expiry=Employee.objects.values_list('passport_expiry','notification_email').filter( (Q(passport_expiry__lte=next_month_expiry_date) & Q(passport_expiry__gte=month_expiry_date)) )
 
-        # print(employee)
-        # print(email_list)
-        # print(passport_expiry_list)
-        # print(visa_expiry_list)
-        # print(emirates_expiry__list)
-        # print(insurence_expiry__list)
-        
-        # subject = 'Code Band'
-        # message = 'Sending Email through Gmail'
-        # send_mail(subject, 
-        #         message, settings.EMAIL_HOST_USER, email_list, fail_silently=False)
-            
+        for i in employee_passport_expiry:
+            subject = 'Code Band'
+            message = 'Sending Email through Gmail {}'.format(i[0])
+            send_mail(subject, 
+                    message, settings.EMAIL_HOST_USER, [i[1]] , fail_silently=False)
         return 
     except:
         return HttpResponse("<script>alert('mail send Failed');window.history.back()</script>")

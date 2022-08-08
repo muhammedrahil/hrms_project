@@ -19,7 +19,7 @@ urlpatterns =[
 
     path('catogory',views.catogory,name="catogory"),
     path('get_catogory',views.get_catogory,name="get_catogory"),
-    path('update_category/(?P<id>[0-9]+)',views.update_category,name="update_category"),
+    path('update_category',views.update_category,name="update_category"),
     # path('get_update_category',views.get_update_category,name="get_update_category"),
     path('delete_category/<int:id>',views.delete_category,name="delete_category"),
 
